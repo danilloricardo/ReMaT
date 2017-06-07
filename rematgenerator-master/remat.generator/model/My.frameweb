@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frameweb:EntityModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:frameweb="http://nemo.inf.ufes.br/projects/frameweb/FW-2015" name="Escola">
+  <packagedElement xsi:type="frameweb:DomainClass" name="Pessoa">
+    <ownedAttribute xsi:type="frameweb:DomainProperty" name="nome"/>
+  </packagedElement>
+  <packagedElement xsi:type="frameweb:DomainClass" name="Aluno">
+    <generalization general="//Pessoa"/>
+  </packagedElement>
+</frameweb:EntityModel>
