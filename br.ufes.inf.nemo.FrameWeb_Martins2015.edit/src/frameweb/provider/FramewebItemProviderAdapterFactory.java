@@ -233,6 +233,29 @@ public class FramewebItemProviderAdapterFactory extends FramewebAdapterFactory i
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link frameweb.DomainAttribute} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected DomainAttributeItemProvider domainAttributeItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link frameweb.DomainAttribute}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createDomainAttributeAdapter() {
+		if (domainAttributeItemProvider == null) {
+			domainAttributeItemProvider = new DomainAttributeItemProvider(this);
+		}
+
+		return domainAttributeItemProvider;
+	}
+
+	/**
 	 * This keeps track of the one adapter used for all {@link frameweb.VersionAttribute} instances.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2592,6 +2615,7 @@ public class FramewebItemProviderAdapterFactory extends FramewebAdapterFactory i
 		if (applicationModelItemProvider != null) applicationModelItemProvider.dispose();
 		if (persistenceModelItemProvider != null) persistenceModelItemProvider.dispose();
 		if (domainAssociationItemProvider != null) domainAssociationItemProvider.dispose();
+		if (domainAttributeItemProvider != null) domainAttributeItemProvider.dispose();
 		if (versionAttributeItemProvider != null) versionAttributeItemProvider.dispose();
 		if (idAttributeItemProvider != null) idAttributeItemProvider.dispose();
 		if (lobAttributeItemProvider != null) lobAttributeItemProvider.dispose();

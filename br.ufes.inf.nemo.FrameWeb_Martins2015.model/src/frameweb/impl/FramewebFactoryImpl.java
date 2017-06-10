@@ -64,6 +64,7 @@ public class FramewebFactoryImpl extends EFactoryImpl implements FramewebFactory
 			case FramewebPackage.APPLICATION_MODEL: return createApplicationModel();
 			case FramewebPackage.PERSISTENCE_MODEL: return createPersistenceModel();
 			case FramewebPackage.DOMAIN_ASSOCIATION: return createDomainAssociation();
+			case FramewebPackage.DOMAIN_ATTRIBUTE: return createDomainAttribute();
 			case FramewebPackage.VERSION_ATTRIBUTE: return createVersionAttribute();
 			case FramewebPackage.ID_ATTRIBUTE: return createIdAttribute();
 			case FramewebPackage.LOB_ATTRIBUTE: return createLOBAttribute();
@@ -309,6 +310,16 @@ public class FramewebFactoryImpl extends EFactoryImpl implements FramewebFactory
 	public DomainAssociation createDomainAssociation() {
 		DomainAssociationImpl domainAssociation = new DomainAssociationImpl();
 		return domainAssociation;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public DomainAttribute createDomainAttribute() {
+		DomainAttributeImpl domainAttribute = new DomainAttributeImpl();
+		return domainAttribute;
 	}
 
 	/**

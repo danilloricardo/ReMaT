@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<frameweb:EntityModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:frameweb="http://nemo.inf.ufes.br/projects/frameweb/FW-2015" name="Escola">
-  <packagedElement xsi:type="frameweb:DomainClass" name="Pessoa">
-    <ownedAttribute xsi:type="frameweb:DomainProperty" name="nome"/>
-  </packagedElement>
-  <packagedElement xsi:type="frameweb:DomainClass" name="Aluno">
-    <generalization general="//Pessoa"/>
-  </packagedElement>
-</frameweb:EntityModel>
+<frameweb:FramewebProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:frameweb="http://nemo.inf.ufes.br/projects/frameweb/FW-2015" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML">
+  <compose xsi:type="frameweb:EntityModel" name="C2dDomain">
+    <packagedElement xsi:type="frameweb:DomainPackage" name="Domain">
+      <packagedElement xsi:type="frameweb:DomainClass" name="Researcher"/>
+      <packagedElement xsi:type="uml:Class" name="dblp::Person"/>
+      <packagedElement xsi:type="uml:Dependency" name="" client="//@compose.0/Domain/Researcher" supplier="//@compose.0/Domain/dblp::Person"/>
+    </packagedElement>
+  </compose>
+</frameweb:FramewebProject>

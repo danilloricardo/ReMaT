@@ -10,20 +10,24 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JOptionPane;
 
-import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.uml2.uml.Element;
+import org.eclipse.uml2.uml.GeneralizationSet;
+import org.eclipse.uml2.uml.internal.impl.GeneralizationSetImpl;
 
 import frameweb.FramewebModel;
-import frameweb.FramewebPackage;
+import frameweb.FramewebProject;
+import frameweb.impl.DomainAssociationImpl;
 import frameweb.impl.DomainClassImpl;
+import frameweb.impl.DomainConstraintsImpl;
+import frameweb.impl.DomainGeneralizationImpl;
+import frameweb.impl.DomainGeneralizationSetImpl;
+import frameweb.impl.DomainPackageImpl;
+import frameweb.impl.DomainPropertyImpl;
 import frameweb.impl.EntityModelImpl;
 import frameweb.impl.FramewebModelImpl;
 
@@ -52,14 +56,14 @@ public class Application {
 		// JOptionPane.showMessageDialog(null, "Seu nome é " + nome);
 
 		List<EObject> lista = new ArrayList<EObject>();
-		lista = new RematGenerator().generateCode("/home/danillo/runtime-EclipseApplication/escola/model/My.frameweb",
+		lista = new RematGenerator().generateCode("/home/danillo/runtime-EclipseApplication/escola/model/c2d.frameweb",
 				parameters);
 		ap.codeGenerator(lista, parameters);
 	}
 
 	public void upload() {
 		String pasta = System.getProperty("user.dir") + "/model/";
-		String nome = "My.frameweb";
+		String nome = "c2d.frameweb";
 		File novoArquivo = new File(pasta + nome);
 		FileOutputStream saida = null;
 		try {
@@ -70,7 +74,8 @@ public class Application {
 		}
 		InputStream arquivoCarregado = null;
 		try {
-			arquivoCarregado = new FileInputStream("/home/danillo/runtime-EclipseApplication/escola/model/My.frameweb");
+			arquivoCarregado = new FileInputStream(
+					"/home/danillo/runtime-EclipseApplication/escola/model/c2d.frameweb");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -93,48 +98,100 @@ public class Application {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "null", "restriction" })
+	@SuppressWarnings({ "unchecked", "restriction" })
 	public void codeGenerator(List<EObject> listModel, ArrayList<String> parameters) {
 
-		ArrayList<EntityModelImpl> models = new ArrayList<EntityModelImpl>();
-		models.addAll((Collection<? extends EntityModelImpl>) listModel);
+		ArrayList<FramewebProject> projects = new ArrayList<FramewebProject>();
+		projects.addAll((Collection<? extends FramewebProject>) listModel);
 		String doc = new String();
+		EList<FramewebModel> models = projects.get(0).getCompose();
+		for (int w = 0; w < models.size(); w++) {
+			if (models.get(w) instanceof EntityModelImpl) {
 
-		for (int i = 0; i < models.size(); i++) {
-			doc = "@prefix map: <" + System.getProperty("user.dir") + "/mapping-"
-					+ models.get(i).getName().toLowerCase() + ".ttl" + "#> .\n" 
-					+ "@prefix "
-					+ models.get(i).getName().toLowerCase() + ": <"
-					+ JOptionPane.showInputDialog("URL of vocabulary of your model?") + "> .\n"
-					+ "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n"
-					+ "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n"
-					+ "@prefix owl: <http://www.w3.org/2002/07/owl#> .\n"
-					+ "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n"
-					+ "@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .\n"
-					+ "@prefix dc: <http://purl.org/dc/elements/1.1/> .\n"
-					+ "@prefix dcterms: <http://purl.org/dc/terms/> .\n" + "@prefix foaf: <http://xmlns.com/foaf/0.1/> .\n"
-					+ "@prefix skos: <http://www.w3.org/2004/02/skos/core#> .\n"
-					+ "@prefix iswc: <http://annotation.semanticweb.org/iswc/iswc.daml#> .\n"
-					+ "@prefix vcard: <http://www.w3.org/2001/vcard-rdf/3.0#> .\n"
-					+ "@prefix jdbc: <http://d2rq.org/terms/jdbc/> .\n"
+				for (int i = 0; i < models.get(w).getPackagedElements().size(); i++) {
+					if (models.get(w).getPackagedElements().get(i) instanceof DomainPackageImpl) {
+						String vocab = JOptionPane.showInputDialog("name of vocabulary?");
+						doc = "@prefix map: <" + System.getProperty("user.dir") + "/mapping-" + vocab + ".ttl"
+								+ "#> .\n" + "@prefix " + vocab + ": <"
+								+ JOptionPane.showInputDialog("URL of vocabulary of your model?") + "> .\n"
+								+ "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n"
+								+ "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n"
+								+ "@prefix owl: <http://www.w3.org/2002/07/owl#> .\n"
+								+ "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n"
+								+ "@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .\n"
+								+ "@prefix dc: <http://purl.org/dc/elements/1.1/> .\n"
+								+ "@prefix dcterms: <http://purl.org/dc/terms/> .\n"
+								+ "@prefix foaf: <http://xmlns.com/foaf/0.1/> .\n"
+								+ "@prefix skos: <http://www.w3.org/2004/02/skos/core#> .\n"
+								+ "@prefix iswc: <http://annotation.semanticweb.org/iswc/iswc.daml#> .\n"
+								+ "@prefix vcard: <http://www.w3.org/2001/vcard-rdf/3.0#> .\n"
+								+ "@prefix jdbc: <http://d2rq.org/terms/jdbc/> .\n"
+								+ "@prefix dblp: <http://dblp.uni-trier.de/rdf/schema-2015-01-26#> .\n\n"
 
-					+ "map:database a d2rq:Database;\n" + " d2rq:jdbcDSN " + "\"" + parameters.get(1) + "\";\n"
-					+ " d2rq:jdbcDriver " + "\"" + parameters.get(0) + "\";\n" + " d2rq:username " + "\""
-					+ parameters.get(2) + "\";\n" + " d2rq:password " + "\"" + parameters.get(3) + "\";\n" + ".\n\n"
+								+ "map:database a d2rq:Database;\n" + " d2rq:jdbcDSN " + "\"" + parameters.get(1)
+								+ "\";\n" + " d2rq:jdbcDriver " + "\"" + parameters.get(0) + "\";\n" + " d2rq:username "
+								+ "\"" + parameters.get(2) + "\";\n" + " d2rq:password " + "\"" + parameters.get(3)
+								+ "\";\n" + "jdbc:autoReconnect " + "\"" + "true" + "\";\n"
+								+ "jdbc:zeroDateTimeBehavior \"convertToNull\";\n" + ".\n\n"
 
-					+ "# Tables";
-			for (int j = 0; j < models.get(i).getPackagedElements().size(); j++) {
-				if (models.get(i).getPackagedElements().get(j) instanceof DomainClassImpl) {
-					codeGeneratorClass((DomainClassImpl) models.get(i).getPackagedElements().get(j), doc);
+								+ "# Tables\n";
+						DomainPackageImpl domainPackage = (DomainPackageImpl) models.get(w).getPackagedElements()
+								.get(i);
+
+						for (int j = 0; j < domainPackage.getPackagedElements().size(); j++) {
+							if (domainPackage.getPackagedElements().get(j) instanceof DomainClassImpl) {
+								doc = codeGeneratorClass((DomainClassImpl) domainPackage.getPackagedElements().get(j),
+										doc, domainPackage, vocab);
+							}
+						}
+
+					}
 				}
 			}
-			System.out.println(doc);
-
 		}
+		System.out.println(doc);
 
 	}
 
-	public void codeGeneratorClass(DomainClassImpl domainClass, String doc) {
+	@SuppressWarnings("restriction")
+	public String codeGeneratorClass(DomainClassImpl domainClass, String doc, DomainPackageImpl domainPackage,
+			String vocab) {
+		String strClass = new String();
+		if (!domainClass.isAbstract()) {
+			strClass = "map:" + domainClass.getName() + " a d2rq:ClassMap;\n" + "d2rq:dataStorage map:database;\n"
+					+ "d2rq:class " + vocab + ":" + domainClass.getName() + ";\n" + "d2rq:classDefinitionLabel " + "\""
+					+ domainClass.getName() + "\";\n";
+			for (int i = 0; i < domainClass.allOwnedElements().size(); i++) {
+
+				if (domainClass.allOwnedElements().get(i) instanceof DomainGeneralizationImpl) {
+					DomainGeneralizationImpl domainGeneralization = (DomainGeneralizationImpl) domainClass
+							.allOwnedElements().get(i);
+					for (GeneralizationSet gSet : domainGeneralization.getGeneralizationSets()) {
+						strClass = strClass.concat("rdfs:subClassOf " + gSet.getPowertype().getName() + ";\n");
+					}
+				}
+				
+				if (domainClass.allOwnedElements().get(i) instanceof DomainPropertyImpl) {
+					DomainPropertyImpl domainProperty = (DomainPropertyImpl) domainClass.allOwnedElements().get(i);
+					DomainAssociationImpl domainAssociation = (DomainAssociationImpl) domainProperty.getAssociation();
+					for (Element e : domainAssociation.allOwnedElements()) {
+						if (e instanceof DomainConstraintsImpl) {
+							DomainConstraintsImpl domainConstraints = (DomainConstraintsImpl) e;
+							strClass = strClass.concat("owl:equivalentClass " + domainConstraints.getName() + ";\n");
+
+						}
+						
+					}
+				}
+
+			}
+			
+			strClass = strClass.concat(".\n");			
+System.out.println(domainClass.getAllAttributes());
+			doc = doc.concat(strClass);
+
+		}
+		return doc;
 	}
 
 }
