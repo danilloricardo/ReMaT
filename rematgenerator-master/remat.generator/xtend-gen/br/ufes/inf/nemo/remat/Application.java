@@ -1,9 +1,11 @@
 package br.ufes.inf.nemo.remat;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,19 +19,18 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.GeneralizationSet;
-import org.eclipse.uml2.uml.internal.impl.GeneralizationSetImpl;
+import org.eclipse.uml2.uml.Property;
 
 import frameweb.FramewebModel;
 import frameweb.FramewebProject;
 import frameweb.impl.DomainAssociationImpl;
+import frameweb.impl.DomainAttributeImpl;
 import frameweb.impl.DomainClassImpl;
 import frameweb.impl.DomainConstraintsImpl;
 import frameweb.impl.DomainGeneralizationImpl;
-import frameweb.impl.DomainGeneralizationSetImpl;
 import frameweb.impl.DomainPackageImpl;
 import frameweb.impl.DomainPropertyImpl;
 import frameweb.impl.EntityModelImpl;
-import frameweb.impl.FramewebModelImpl;
 
 public class Application {
 
@@ -56,8 +57,8 @@ public class Application {
 		// JOptionPane.showMessageDialog(null, "Seu nome é " + nome);
 
 		List<EObject> lista = new ArrayList<EObject>();
-		lista = new RematGenerator().generateCode("/home/danillo/runtime-EclipseApplication/escola/model/c2d.frameweb",
-				parameters);
+		lista = new RematGenerator().generateCode(
+				"/Users/danillo.celino/Documents/runtime-EclipseApplication/Reseacher/model/c2d.frameweb", parameters);
 		ap.codeGenerator(lista, parameters);
 	}
 
@@ -75,12 +76,19 @@ public class Application {
 		InputStream arquivoCarregado = null;
 		try {
 			arquivoCarregado = new FileInputStream(
-					"/home/danillo/runtime-EclipseApplication/escola/model/c2d.frameweb");
+					"/Users/danillo.celino/Documents/runtime-EclipseApplication/Reseacher/model/c2d.frameweb");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		copiar(arquivoCarregado, saida);
+		try {
+			arquivoCarregado.close();
+			saida.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void copiar(InputStream origem, OutputStream destino) {
@@ -105,12 +113,13 @@ public class Application {
 		projects.addAll((Collection<? extends FramewebProject>) listModel);
 		String doc = new String();
 		EList<FramewebModel> models = projects.get(0).getCompose();
+		String vocab = JOptionPane.showInputDialog("name of vocabulary?");
+
 		for (int w = 0; w < models.size(); w++) {
 			if (models.get(w) instanceof EntityModelImpl) {
 
 				for (int i = 0; i < models.get(w).getPackagedElements().size(); i++) {
 					if (models.get(w).getPackagedElements().get(i) instanceof DomainPackageImpl) {
-						String vocab = JOptionPane.showInputDialog("name of vocabulary?");
 						doc = "@prefix map: <" + System.getProperty("user.dir") + "/mapping-" + vocab + ".ttl"
 								+ "#> .\n" + "@prefix " + vocab + ": <"
 								+ JOptionPane.showInputDialog("URL of vocabulary of your model?") + "> .\n"
@@ -149,7 +158,22 @@ public class Application {
 				}
 			}
 		}
-		System.out.println(doc);
+		File dir = new File(System.getProperty("user.dir") + "/mapping");
+		dir.mkdir();
+
+		BufferedWriter buffWrite;
+		try {
+
+			buffWrite = new BufferedWriter(
+					new FileWriter(System.getProperty("user.dir") + "/mapping/" + "mapping_" + vocab + ".ttl"));
+			buffWrite.append(doc + "\n");
+			buffWrite.close();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//System.out.println(doc);
 
 	}
 
@@ -158,9 +182,9 @@ public class Application {
 			String vocab) {
 		String strClass = new String();
 		if (!domainClass.isAbstract()) {
-			strClass = "map:" + domainClass.getName() + " a d2rq:ClassMap;\n" + "d2rq:dataStorage map:database;\n"
-					+ "d2rq:class " + vocab + ":" + domainClass.getName() + ";\n" + "d2rq:classDefinitionLabel " + "\""
-					+ domainClass.getName() + "\";\n";
+			strClass = "\n" + "map:" + domainClass.getName() + " a d2rq:ClassMap;\n"
+					+ "d2rq:dataStorage map:database;\n" + "d2rq:class " + vocab + ":" + domainClass.getName() + ";\n"
+					+ "d2rq:classDefinitionLabel " + "\"" + domainClass.getName() + "\";\n";
 			for (int i = 0; i < domainClass.allOwnedElements().size(); i++) {
 
 				if (domainClass.allOwnedElements().get(i) instanceof DomainGeneralizationImpl) {
@@ -170,7 +194,7 @@ public class Application {
 						strClass = strClass.concat("rdfs:subClassOf " + gSet.getPowertype().getName() + ";\n");
 					}
 				}
-				
+
 				if (domainClass.allOwnedElements().get(i) instanceof DomainPropertyImpl) {
 					DomainPropertyImpl domainProperty = (DomainPropertyImpl) domainClass.allOwnedElements().get(i);
 					DomainAssociationImpl domainAssociation = (DomainAssociationImpl) domainProperty.getAssociation();
@@ -180,14 +204,36 @@ public class Application {
 							strClass = strClass.concat("owl:equivalentClass " + domainConstraints.getName() + ";\n");
 
 						}
-						
+
 					}
 				}
 
 			}
-			
-			strClass = strClass.concat(".\n");			
-System.out.println(domainClass.getAllAttributes());
+
+			strClass = strClass.concat(".\n");
+			DomainAttributeImpl domainAttribute;
+			System.out.println(domainClass.getAllAttributes());
+			for (Property p : domainClass.getAllAttributes()) {
+				if (p instanceof DomainAttributeImpl) {
+					domainAttribute = (DomainAttributeImpl) p;
+					strClass = strClass.concat("map:" + domainClass.getName() + "_" + domainAttribute.getName()
+							+ " a d2rq:PropertyBridge;\n");
+					strClass = strClass.concat("d2rq:belongsToClassMap map:" + domainClass.getName() + ";\n");
+					strClass = strClass.concat("d2rq:property " + vocab + ":" + domainClass.getName() + "_"
+							+ domainAttribute.getName() + ";\n");
+					strClass = strClass.concat("d2rq:propertyDefinitionLabel \"" + domainClass.getName() + " "
+							+ domainAttribute.getName() + "\";\n");
+					if (domainAttribute.getDefaultValue() != null)
+						strClass = strClass.concat(
+								"owl:equivalentProperty " + domainAttribute.getDefaultValue().stringValue() + ";\n");
+
+					strClass = strClass.concat(
+							"d2rq:column \"" + domainClass.getName() + "." + domainAttribute.getName() + "\";\n");
+					strClass = strClass.concat(".\n");
+
+				}
+			}
+
 			doc = doc.concat(strClass);
 
 		}

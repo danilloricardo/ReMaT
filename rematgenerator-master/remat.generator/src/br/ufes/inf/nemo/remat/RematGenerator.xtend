@@ -11,8 +11,6 @@ import org.eclipse.xtext.generator.IGenerator
 import frameweb.FramewebPackage
 import java.util.Map
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
-//import frameweb.impl.DomainClassImpl
-import frameweb.impl.EntityModelImpl
 
 class RematGenerator implements IGenerator {
 	
@@ -21,29 +19,12 @@ class RematGenerator implements IGenerator {
 	Map<String, Object> m
 	
 	 Resource.Factory.Registry reg
-	 EntityModelImpl model
 	
 	override doGenerate(Resource input, IFileSystemAccess fsa) {
 		for (EObject o : input.contents) {
-			//o.compile(fsa)
 		}
 	}
-//
-//	def dispatch void compile(DomainClassImpl e, IFileSystemAccess fsa) {
-//		st ="";
-//		for (c : e.ownedAttributes) {
-//			e.compile(fsa)
-//		}
-//	}
-//	
-//
-//	def compile(PropertyImpl e, IFileSystemAccess fsa) {
-//		fsa.generateFile(e.name + ".txt", '''
-//			this is element «e.name»
-//		''')
-//	}
 
-//	def dispatch void compile(EObject m, IFileSystemAccess fsa) {}
 
 	def public List<EObject> generateCode(String path,List<String> parameters) {
 
@@ -66,12 +47,9 @@ class RematGenerator implements IGenerator {
 	        r = rs.getResource(URI.createURI(path), true);
 	      
 		
-		for (EObject o : r.contents) {
-			
-			System::out.println(o.toString)
-		}
+		
 					 
-		System::out.println(message + parameters)
+		System::out.println(message)
 		
 		return r.contents
 
