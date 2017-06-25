@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Xtend Tutorial
-Bundle-SymbolicName: br.inf.ufes.br.FrameWeb_LD.codegenerator_ReMaT;singleton:=true
+Bundle-SymbolicName: br.ufes.inf.nemo.FrameWeb_Celino2017.codegenerator_ReMaT;singleton:=true
 Bundle-Version: 2.10.0.qualifier
 Bundle-Vendor: Eclipse Tools Project
 Require-Bundle: org.eclipse.xtext.xbase.lib,
