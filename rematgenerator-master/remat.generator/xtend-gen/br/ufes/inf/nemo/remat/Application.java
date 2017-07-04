@@ -58,13 +58,13 @@ public class Application {
 
 		List<EObject> lista = new ArrayList<EObject>();
 		lista = new RematGenerator().generateCode(
-				"/Users/danillo.celino/Documents/runtime-EclipseApplication/Reseacher/model/c2d.frameweb", parameters);
+				"/Users/danillo.celino/Documents/runtime-EclipseApplication/Medic/model/medic.frameweb", parameters);
 		ap.codeGenerator(lista, parameters);
 	}
 
 	public void upload() {
 		String pasta = System.getProperty("user.dir") + "/model/";
-		String nome = "c2d.frameweb";
+		String nome = "music.frameweb";
 		File novoArquivo = new File(pasta + nome);
 		FileOutputStream saida = null;
 		try {
@@ -76,7 +76,7 @@ public class Application {
 		InputStream arquivoCarregado = null;
 		try {
 			arquivoCarregado = new FileInputStream(
-					"/Users/danillo.celino/Documents/runtime-EclipseApplication/Reseacher/model/c2d.frameweb");
+					"/Users/danillo.celino/Documents/runtime-EclipseApplication/Medic/model/medic.frameweb");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -173,7 +173,7 @@ public class Application {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//System.out.println(doc);
+		// System.out.println(doc);
 
 	}
 
@@ -198,13 +198,16 @@ public class Application {
 				if (domainClass.allOwnedElements().get(i) instanceof DomainPropertyImpl) {
 					DomainPropertyImpl domainProperty = (DomainPropertyImpl) domainClass.allOwnedElements().get(i);
 					DomainAssociationImpl domainAssociation = (DomainAssociationImpl) domainProperty.getAssociation();
-					for (Element e : domainAssociation.allOwnedElements()) {
-						if (e instanceof DomainConstraintsImpl) {
-							DomainConstraintsImpl domainConstraints = (DomainConstraintsImpl) e;
-							strClass = strClass.concat("owl:equivalentClass " + domainConstraints.getName() + ";\n");
+					if (domainAssociation.allOwnedElements() != null) {
+						for (Element e : domainAssociation.allOwnedElements()) {
+							if (e instanceof DomainConstraintsImpl) {
+								DomainConstraintsImpl domainConstraints = (DomainConstraintsImpl) e;
+								strClass = strClass
+										.concat("owl:equivalentClass " + domainConstraints.getName() + ";\n");
+
+							}
 
 						}
-
 					}
 				}
 
@@ -225,7 +228,7 @@ public class Application {
 							+ domainAttribute.getName() + "\";\n");
 					if (domainAttribute.getDefaultValue() != null)
 						strClass = strClass.concat(
-								"owl:equivalentProperty " + domainAttribute.getDefaultValue().stringValue() + ";\n");
+								domainAttribute.getDefaultValue().getName()+" " + domainAttribute.getDefaultValue().stringValue() + ";\n");
 
 					strClass = strClass.concat(
 							"d2rq:column \"" + domainClass.getName() + "." + domainAttribute.getName() + "\";\n");
